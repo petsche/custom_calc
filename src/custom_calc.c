@@ -77,7 +77,7 @@ int pop_operator(custom_calc_state* state, custom_calc_key op) {
   }
 
   int ret_code = 0;
-  NUMBER_TYPE op_output;
+  CALC_NUMBER_TYPE op_output;
   switch (op) {
     case CALC_KEY_PLUS:
       ret_code = add_user(state->stack[state->stack_size - 2],

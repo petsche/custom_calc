@@ -24,8 +24,8 @@
 #define MAX_STACK_SIZE 10
 #endif
 
-#ifndef NUMBER_TYPE
-#  error "Must define target NUMBER_TYPE when compiling."
+#ifndef CALC_NUMBER_TYPE
+#  error "Must define target CALC_NUMBER_TYPE when compiling."
 #endif
 
 /* Keys are assigned char values for easier testing. */
@@ -53,7 +53,7 @@ typedef struct custom_calc_state {
   char input_buf[IO_WIDTH + 1];
   int input_size;
   char output_buf[IO_WIDTH + 1];
-  NUMBER_TYPE stack[MAX_STACK_SIZE];
+  CALC_NUMBER_TYPE stack[MAX_STACK_SIZE];
   int stack_size;
 } custom_calc_state;
 
@@ -61,18 +61,18 @@ int custom_calc_init(custom_calc_state* state);
 
 int custom_calc_update(custom_calc_state* state, custom_calc_key key);
 
-int format_number_user(NUMBER_TYPE number,
+int format_number_user(CALC_NUMBER_TYPE number,
                        char* output_buf,
                        int max_output_size);
 
-int parse_number_user(char* buf, NUMBER_TYPE* output_number);
+int parse_number_user(char* buf, CALC_NUMBER_TYPE* output_number);
 
-int add_user(NUMBER_TYPE first,
-             NUMBER_TYPE second,
-             NUMBER_TYPE* output);
+int add_user(CALC_NUMBER_TYPE first,
+             CALC_NUMBER_TYPE second,
+             CALC_NUMBER_TYPE* output);
 
-int multiply_user(NUMBER_TYPE first,
-                  NUMBER_TYPE second,
-                  NUMBER_TYPE* output);
+int multiply_user(CALC_NUMBER_TYPE first,
+                  CALC_NUMBER_TYPE second,
+                  CALC_NUMBER_TYPE* output);
 
 #endif
