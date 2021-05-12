@@ -42,7 +42,7 @@ void test_case(char* test_input, char* final_output) {
   int index = 0;
   int ret_code = 0;
   while (test_input[index] != 0) {
-    calc_input_key next_key = test_input[index];
+    custom_calc_key next_key = test_input[index];
     ret_code = custom_calc_update(&state, next_key);
     assert_success(ret_code);
     printf("%s\n", state.output_buf);

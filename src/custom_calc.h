@@ -29,33 +29,33 @@
 #endif
 
 /* Keys are assigned char values for easier testing. */
-typedef enum calc_input_key {
-  KEY_0 = '0',
-  KEY_1 = '1',
-  KEY_2 = '2',
-  KEY_3 = '3',
-  KEY_4 = '4',
-  KEY_5 = '5',
-  KEY_6 = '6',
-  KEY_7 = '7',
-  KEY_8 = '8',
-  KEY_9 = '9',
-  KEY_DECIMAL = '.',
-  KEY_PUSH = 'p',
-  KEY_PLUS = '+'
-} calc_input_key;
+typedef enum custom_calc_key {
+  CALC_KEY_0 = '0',
+  CALC_KEY_1 = '1',
+  CALC_KEY_2 = '2',
+  CALC_KEY_3 = '3',
+  CALC_KEY_4 = '4',
+  CALC_KEY_5 = '5',
+  CALC_KEY_6 = '6',
+  CALC_KEY_7 = '7',
+  CALC_KEY_8 = '8',
+  CALC_KEY_9 = '9',
+  CALC_KEY_DECIMAL = '.',
+  CALC_KEY_PUSH = 'p',
+  CALC_KEY_PLUS = '+'
+} custom_calc_key;
 
-typedef struct calc_calc_state {
-  char input_buf[IO_WIDTH];
+typedef struct custom_calc_state {
+  char input_buf[IO_WIDTH + 1];
   int input_size;
-  char output_buf[IO_WIDTH];
+  char output_buf[IO_WIDTH + 1];
   NUMBER_TYPE stack[MAX_STACK_SIZE];
   int stack_size;
 } custom_calc_state;
 
 int custom_calc_init(custom_calc_state* state);
 
-int custom_calc_update(custom_calc_state* state, calc_input_key key);
+int custom_calc_update(custom_calc_state* state, custom_calc_key key);
 
 int format_number_user(NUMBER_TYPE number,
                        char* output_buf,
