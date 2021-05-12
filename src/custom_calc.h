@@ -41,8 +41,12 @@ typedef enum custom_calc_key {
   CALC_KEY_8 = '8',
   CALC_KEY_9 = '9',
   CALC_KEY_DECIMAL = '.',
+  CALC_KEY_FLIP_SIGN = '~',
   CALC_KEY_PUSH = 'p',
-  CALC_KEY_PLUS = '+'
+  CALC_KEY_PLUS = '+', /* 43 */
+  CALC_KEY_MINUS = '-', /* 45 */
+  CALC_KEY_MULTIPLY = 'M', /* 77 */
+  CALC_KEY_DIVIDE = 'd' /* 100 */
 } custom_calc_key;
 
 typedef struct custom_calc_state {
@@ -66,5 +70,9 @@ int parse_number_user(char* buf, NUMBER_TYPE* output_number);
 int add_user(NUMBER_TYPE first,
              NUMBER_TYPE second,
              NUMBER_TYPE* output);
+
+int multiply_user(NUMBER_TYPE first,
+                  NUMBER_TYPE second,
+                  NUMBER_TYPE* output);
 
 #endif

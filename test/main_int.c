@@ -56,5 +56,6 @@ void test_case(char* test_input, char* final_output) {
 int main(void) {
   test_case("12p34p+","46");
   test_case("123p456+7890+","8469");
+  test_case("5p6pM5+","35");
 }
 

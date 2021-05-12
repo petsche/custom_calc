@@ -71,7 +71,7 @@ int push_input_buf(custom_calc_state* state) {
   return ret_code;
 }
 
-int pop_operation(custom_calc_state* state, custom_calc_key op) {
+int pop_operator(custom_calc_state* state, custom_calc_key op) {
   if (state->stack_size < 2) {
     return -4;
   }
@@ -84,6 +84,11 @@ int pop_operation(custom_calc_state* state, custom_calc_key op) {
                           state->stack[state->stack_size - 1],
                           &op_output);
       break;
+    case CALC_KEY_MULTIPLY:
+      ret_code = multiply_user(state->stack[state->stack_size - 2],
+                               state->stack[state->stack_size - 1],
+                               &op_output);
+      break;
     default:
       ret_code = -5;
   }
@@ -93,6 +98,10 @@ int pop_operation(custom_calc_state* state, custom_calc_key op) {
   }
     
   return ret_code;
+}
+
+int process_operator(custom_calc_state* state, custom_calc_key key) {
+  int ret_code = 0;
 }
 
 int custom_calc_update(custom_calc_state* state, custom_calc_key key) {
@@ -117,11 +126,12 @@ int custom_calc_update(custom_calc_state* state, custom_calc_key key) {
       ret_code = push_input_buf(state);
       break;
     case CALC_KEY_PLUS:
+    case CALC_KEY_MULTIPLY:
       if (state->input_size > 0) {
         ret_code = push_input_buf(state);
       }
       if (ret_code != 0) break;
-      ret_code = pop_operation(state, key);
+      ret_code = pop_operator(state, key);
       break;
     default:
       ret_code = -1;

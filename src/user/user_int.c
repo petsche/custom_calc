@@ -35,3 +35,10 @@ int add_user(int first,
   return 0;
 }
 
+int multiply_user(int first,
+                  int second,
+                  int* output) {
+  *output = first * second;
+  return 0;
+}
+
