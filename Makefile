@@ -7,7 +7,7 @@ build_dir:
 	mkdir -p build
 
 build/user_int.o: src/user/user_int.c src/custom_calc.h
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -c -o $@ $< $(CFLAGS) -DCALC_NUMBER_TYPE=int
 
 build/custom_calc_int.o: src/custom_calc.c src/custom_calc.h
 	$(CC) -c -o $@ $< $(CFLAGS) -DCALC_NUMBER_TYPE=int

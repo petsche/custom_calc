@@ -16,12 +16,12 @@
 #ifndef CUSTOM_CALC_H
 #define CUSTOM_CALC_H
 
-#ifndef IO_WIDTH
-#define IO_WIDTH 16
+#ifndef CALC_IO_WIDTH
+#define CALC_IO_WIDTH 16
 #endif
 
-#ifndef MAX_STACK_SIZE
-#define MAX_STACK_SIZE 10
+#ifndef CALC_MAX_STACK_SIZE
+#define CALC_MAX_STACK_SIZE 10
 #endif
 
 #ifndef CALC_NUMBER_TYPE
@@ -43,36 +43,49 @@ typedef enum custom_calc_key {
   CALC_KEY_DECIMAL = '.',
   CALC_KEY_FLIP_SIGN = '~',
   CALC_KEY_PUSH = 'p',
+/* Opertor values are ordered to match precedence */
   CALC_KEY_PLUS = '+', /* 43 */
   CALC_KEY_MINUS = '-', /* 45 */
   CALC_KEY_MULTIPLY = 'M', /* 77 */
   CALC_KEY_DIVIDE = 'd' /* 100 */
 } custom_calc_key;
 
+typedef enum custom_calc_status {
+  CALC_STATUS_SUCCESS
+} custom_calc_status;
+
 typedef struct custom_calc_state {
-  char input_buf[IO_WIDTH + 1];
-  int input_size;
-  char output_buf[IO_WIDTH + 1];
-  CALC_NUMBER_TYPE stack[MAX_STACK_SIZE];
-  int stack_size;
+  char input_buf[CALC_IO_WIDTH + 1];
+  char input_size;
+  char output_buf[CALC_IO_WIDTH + 1];
+  CALC_NUMBER_TYPE stack[CALC_MAX_STACK_SIZE];
+  char stack_size;
 } custom_calc_state;
 
-int custom_calc_init(custom_calc_state* state);
+custom_calc_status
+custom_calc_init(custom_calc_state* state);
 
-int custom_calc_update(custom_calc_state* state, custom_calc_key key);
+custom_calc_status
+custom_calc_update(custom_calc_state* state, custom_calc_key key);
 
-int format_number_user(CALC_NUMBER_TYPE number,
-                       char* output_buf,
-                       int max_output_size);
+/* Functions to be implemented for user's target architecture */
+custom_calc_status
+format_number_user(CALC_NUMBER_TYPE number,
+                   char* output_buf,
+                   char max_output_size);
 
-int parse_number_user(char* buf, CALC_NUMBER_TYPE* output_number);
+custom_calc_status
+parse_number_user(char* buf,
+                  CALC_NUMBER_TYPE* output_number);
 
-int add_user(CALC_NUMBER_TYPE first,
-             CALC_NUMBER_TYPE second,
-             CALC_NUMBER_TYPE* output);
+custom_calc_status
+add_user(CALC_NUMBER_TYPE first,
+         CALC_NUMBER_TYPE second,
+         CALC_NUMBER_TYPE* output);
 
-int multiply_user(CALC_NUMBER_TYPE first,
-                  CALC_NUMBER_TYPE second,
-                  CALC_NUMBER_TYPE* output);
+custom_calc_status
+multiply_user(CALC_NUMBER_TYPE first,
+              CALC_NUMBER_TYPE second,
+              CALC_NUMBER_TYPE* output);
 
 #endif

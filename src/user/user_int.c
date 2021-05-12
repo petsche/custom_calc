@@ -15,30 +15,36 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include "custom_calc.h"
  
-int format_number_user(int number,
-                       char* output_buf,
-                       int max_output_size) {
+custom_calc_status
+format_number_user(int number,
+                   char* output_buf,
+                   char max_output_size) {
   sprintf(output_buf, "%i", number);
-  return 0;
+  return CALC_STATUS_SUCCESS;
 }
     
-int parse_number_user(char* buf, int* output_number) {
+custom_calc_status
+parse_number_user(char* buf,
+                  int* output_number) {
   *output_number = atoi(buf);
-  return 0;
+  return CALC_STATUS_SUCCESS;
 }
     
-int add_user(int first,
-             int second,
-             int* output) {
+custom_calc_status
+add_user(int first,
+         int second,
+         int* output) {
   *output = first + second;
-  return 0;
+  return CALC_STATUS_SUCCESS;
 }
 
-int multiply_user(int first,
-                  int second,
-                  int* output) {
+custom_calc_status
+multiply_user(int first,
+              int second,
+              int* output) {
   *output = first * second;
-  return 0;
+  return CALC_STATUS_SUCCESS;
 }
 

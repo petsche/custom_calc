@@ -15,7 +15,8 @@
  */
 #include "custom_calc.h"
 
-int custom_calc_init(custom_calc_state* state) {
+custom_calc_status
+custom_calc_init(custom_calc_state* state) {
   state->input_buf[0] = 0;
   state->input_size = 0;
   state->output_buf[0] = 0;
@@ -30,8 +31,9 @@ void string_copy(char* dest, const char* source) {
   } while (source[index++] != 0);
 }
 
-int process_number_input(char* input_buf, int* input_size, char input) {
-  if (*input_size == IO_WIDTH) {
+custom_calc_status
+process_number_input(char* input_buf, char* input_size, char input) {
+  if (*input_size == CALC_IO_WIDTH) {
     return -2;
   }
 
@@ -41,7 +43,8 @@ int process_number_input(char* input_buf, int* input_size, char input) {
   return 0;
 }
 
-int update_output_buf(custom_calc_state* state) {
+custom_calc_status
+update_output_buf(custom_calc_state* state) {
   if (state->input_size > 0) {
     string_copy(state->output_buf, state->input_buf);
     return 0;
@@ -49,18 +52,19 @@ int update_output_buf(custom_calc_state* state) {
   if (state->stack_size > 0) {
     return format_number_user(state->stack[state->stack_size - 1],
                               state->output_buf,
-                              IO_WIDTH);
+                              CALC_IO_WIDTH);
   }
   state->output_buf[0] = 0;
   return 0;
 }
 
-int push_input_buf(custom_calc_state* state) {
-  if (state->stack_size == MAX_STACK_SIZE) {
+custom_calc_status
+push_input_buf(custom_calc_state* state) {
+  if (state->stack_size == CALC_MAX_STACK_SIZE) {
     return -3;
   }
 
-  int ret_code = parse_number_user(state->input_buf,
+  custom_calc_status ret_code = parse_number_user(state->input_buf,
                                    &(state->stack[state->stack_size]));
 
   if (ret_code == 0) {
@@ -71,12 +75,13 @@ int push_input_buf(custom_calc_state* state) {
   return ret_code;
 }
 
-int pop_operator(custom_calc_state* state, custom_calc_key op) {
+custom_calc_status
+pop_operator(custom_calc_state* state, custom_calc_key op) {
   if (state->stack_size < 2) {
     return -4;
   }
 
-  int ret_code = 0;
+  custom_calc_status ret_code = 0;
   CALC_NUMBER_TYPE op_output;
   switch (op) {
     case CALC_KEY_PLUS:
@@ -100,12 +105,14 @@ int pop_operator(custom_calc_state* state, custom_calc_key op) {
   return ret_code;
 }
 
-int process_operator(custom_calc_state* state, custom_calc_key key) {
-  int ret_code = 0;
+custom_calc_status
+process_operator(custom_calc_state* state, custom_calc_key key) {
+  custom_calc_status ret_code = 0;
 }
 
-int custom_calc_update(custom_calc_state* state, custom_calc_key key) {
-  int ret_code = 0;
+custom_calc_status
+custom_calc_update(custom_calc_state* state, custom_calc_key key) {
+  custom_calc_status ret_code = 0;
   switch (key) {
     case CALC_KEY_0:
     case CALC_KEY_1:

@@ -19,7 +19,7 @@
 #include "custom_calc.h"
 
 void assert_success(int ret_code) {
-  if (ret_code != 0) {
+  if (ret_code != CALC_STATUS_SUCCESS) {
     printf("Test failed.\nReturn code [%i]\n");
     exit(EXIT_FAILURE);
   }
@@ -39,8 +39,8 @@ void test_case(char* test_input, char* final_output) {
   custom_calc_state state;
   custom_calc_init(&state);
 
-  int index = 0;
-  int ret_code = 0;
+  char index = 0;
+  custom_calc_status ret_code = 0;
   while (test_input[index] != 0) {
     custom_calc_key next_key = test_input[index];
     ret_code = custom_calc_update(&state, next_key);
