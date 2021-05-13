@@ -34,10 +34,12 @@ void assert_equal(char* expected, char* test_value) {
   }
 }
 
-void test_case(char* test_input, char* final_output) { 
+void test_case(custom_calc_mode mode,
+               char* test_input,
+               char* final_output) { 
   printf("Running test for input [%s]\n", test_input);
   custom_calc_state state;
-  custom_calc_init(&state);
+  custom_calc_init(&state, mode);
 
   char index = 0;
   custom_calc_status ret_code = 0;
@@ -54,8 +56,10 @@ void test_case(char* test_input, char* final_output) {
 }
 
 int main(void) {
-  test_case("12p34p+","46");
-  test_case("123p456+7890+","8469");
-  test_case("5p6pM5+","35");
+  test_case(CALC_MODE_RPN, "12p34p+", "46");
+  test_case(CALC_MODE_RPN, "123p456+7890+", "8469");
+  test_case(CALC_MODE_RPN, "5p6pM5+", "35");
+  test_case(CALC_MODE_INFIX, "3+4=", "7");
+  test_case(CALC_MODE_INFIX, "1+5M2+4=", "15");
 }
 

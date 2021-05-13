@@ -43,12 +43,18 @@ typedef enum custom_calc_key {
   CALC_KEY_DECIMAL = '.',
   CALC_KEY_FLIP_SIGN = '~',
   CALC_KEY_PUSH = 'p',
+  CALC_KEY_EQUALS = '=',
 /* Opertor values are ordered to match precedence */
   CALC_KEY_PLUS = '+', /* 43 */
   CALC_KEY_MINUS = '-', /* 45 */
   CALC_KEY_MULTIPLY = 'M', /* 77 */
   CALC_KEY_DIVIDE = 'd' /* 100 */
 } custom_calc_key;
+
+typedef enum custom_calc_mode {
+  CALC_MODE_RPN,
+  CALC_MODE_INFIX
+} custom_calc_mode;
 
 typedef enum custom_calc_status {
   CALC_STATUS_SUCCESS
@@ -58,12 +64,16 @@ typedef struct custom_calc_state {
   char input_buf[CALC_IO_WIDTH + 1];
   char input_size;
   char output_buf[CALC_IO_WIDTH + 1];
-  CALC_NUMBER_TYPE stack[CALC_MAX_STACK_SIZE];
-  char stack_size;
+  CALC_NUMBER_TYPE rpn_stack[CALC_MAX_STACK_SIZE];
+  char rpn_stack_size;
+  custom_calc_mode mode;
+  custom_calc_key operator_stack[CALC_MAX_STACK_SIZE];
+  char operator_stack_size;
 } custom_calc_state;
 
 custom_calc_status
-custom_calc_init(custom_calc_state* state);
+custom_calc_init(custom_calc_state* state,
+                 custom_calc_mode mode);
 
 custom_calc_status
 custom_calc_update(custom_calc_state* state, custom_calc_key key);
