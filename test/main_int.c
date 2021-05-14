@@ -56,11 +56,10 @@ void test_case(custom_calc_mode mode,
 }
 
 int main(void) {
-/* push = p, multiply = M, divide = d */
   test_case(CALC_MODE_RPN, "12p34p+", "46");
-  test_case(CALC_MODE_RPN, "123p456+7890+", "8469");
-  test_case(CALC_MODE_RPN, "5p6pM5+", "35");
-  test_case(CALC_MODE_INFIX, "3+4d4M2-9=", "-4");
-  test_case(CALC_MODE_INFIX, "1+5M2+4=", "15");
+  test_case(CALC_MODE_RPN, "123p456+7890+10-", "8459");
+  test_case(CALC_MODE_RPN, "5p6p*5+", "35");
+  test_case(CALC_MODE_INFIX, "3+4/4*2p-9=", "-4");
+  test_case(CALC_MODE_INFIX, "1-5+4=", "0");
 }
 

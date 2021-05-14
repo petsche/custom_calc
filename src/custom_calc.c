@@ -118,16 +118,33 @@ apply_operator_rpn(custom_calc_state* state, custom_calc_key op) {
   return ret_code;
 }
 
+custom_calc_key operator_stack_top(custom_calc_state* state) {
+  return state->operator_stack[state->operator_stack_size - 1];
+}
+
 custom_calc_key operator_stack_pop(custom_calc_state* state) {
   --(state->operator_stack_size);
   return state->operator_stack[state->operator_stack_size];
+}
+
+char operator_precedence(custom_calc_key operator) {
+  switch (operator) {
+    case CALC_KEY_ADD:
+    case CALC_KEY_SUBTRACT:
+      return 1;
+    case CALC_KEY_MULTIPLY:
+    case CALC_KEY_DIVIDE:
+      return 2;
+  }
+  return 0;
 }
 
 custom_calc_status
 push_infix_operator(custom_calc_state* state, custom_calc_key key) {
   custom_calc_status ret_code = 0;
   while (state->operator_stack_size > 0 &&
-         state->operator_stack[state->operator_stack_size - 1] >= key) {
+         operator_precedence(operator_stack_top(state))
+         >= operator_precedence(key)) {
     ret_code = apply_operator_rpn(state,
                             operator_stack_pop(state));
     if (ret_code != CALC_STATUS_SUCCESS) break;

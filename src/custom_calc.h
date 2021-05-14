@@ -44,11 +44,10 @@ typedef enum custom_calc_key {
   CALC_KEY_FLIP_SIGN = '~',
   CALC_KEY_PUSH = 'p',
   CALC_KEY_EQUALS = '=',
-/* Opertor values are ordered to match precedence */
-  CALC_KEY_ADD = '+', /* 43 */
-  CALC_KEY_SUBTRACT = '-', /* 45 */
-  CALC_KEY_MULTIPLY = 'M', /* 77 */
-  CALC_KEY_DIVIDE = 'd' /* 100 */
+  CALC_KEY_ADD = '+',
+  CALC_KEY_SUBTRACT = '-',
+  CALC_KEY_MULTIPLY = '*',
+  CALC_KEY_DIVIDE = '/'
 } custom_calc_key;
 
 typedef enum custom_calc_mode {
