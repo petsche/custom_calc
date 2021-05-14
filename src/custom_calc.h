@@ -1,4 +1,4 @@
-/* Copyright (C) 2021  Steven Petsche <stevenpetsche@gmail.com>
+/* Copyright (C) 2021 Steven Petsche <stevenpetsche@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,8 +45,8 @@ typedef enum custom_calc_key {
   CALC_KEY_PUSH = 'p',
   CALC_KEY_EQUALS = '=',
 /* Opertor values are ordered to match precedence */
-  CALC_KEY_PLUS = '+', /* 43 */
-  CALC_KEY_MINUS = '-', /* 45 */
+  CALC_KEY_ADD = '+', /* 43 */
+  CALC_KEY_SUBTRACT = '-', /* 45 */
   CALC_KEY_MULTIPLY = 'M', /* 77 */
   CALC_KEY_DIVIDE = 'd' /* 100 */
 } custom_calc_key;
@@ -71,7 +71,7 @@ typedef struct custom_calc_state {
   char operator_stack_size;
 } custom_calc_state;
 
-custom_calc_status
+void
 custom_calc_init(custom_calc_state* state,
                  custom_calc_mode mode);
 
@@ -94,8 +94,18 @@ add_user(CALC_NUMBER_TYPE first,
          CALC_NUMBER_TYPE* output);
 
 custom_calc_status
+subtract_user(CALC_NUMBER_TYPE first,
+              CALC_NUMBER_TYPE second,
+              CALC_NUMBER_TYPE* output);
+
+custom_calc_status
 multiply_user(CALC_NUMBER_TYPE first,
               CALC_NUMBER_TYPE second,
               CALC_NUMBER_TYPE* output);
+
+custom_calc_status
+divide_user(CALC_NUMBER_TYPE first,
+            CALC_NUMBER_TYPE second,
+            CALC_NUMBER_TYPE* output);
 
 #endif

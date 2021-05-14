@@ -1,4 +1,4 @@
-/* Copyright (C) 2021  Steven Petsche <stevenpetsche@gmail.com>
+/* Copyright (C) 2021 Steven Petsche <stevenpetsche@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  */
 #include "custom_calc.h"
 
-custom_calc_status
+void
 custom_calc_init(custom_calc_state* state,
                  custom_calc_mode mode) {
   state->input_buf[0] = 0;
@@ -87,15 +87,25 @@ apply_operator_rpn(custom_calc_state* state, custom_calc_key op) {
   custom_calc_status ret_code = 0;
   CALC_NUMBER_TYPE op_output;
   switch (op) {
-    case CALC_KEY_PLUS:
+    case CALC_KEY_ADD:
       ret_code = add_user(state->rpn_stack[state->rpn_stack_size - 2],
                           state->rpn_stack[state->rpn_stack_size - 1],
                           &op_output);
+      break;
+    case CALC_KEY_SUBTRACT:
+      ret_code = subtract_user(state->rpn_stack[state->rpn_stack_size - 2],
+                               state->rpn_stack[state->rpn_stack_size - 1],
+                               &op_output);
       break;
     case CALC_KEY_MULTIPLY:
       ret_code = multiply_user(state->rpn_stack[state->rpn_stack_size - 2],
                                state->rpn_stack[state->rpn_stack_size - 1],
                                &op_output);
+      break;
+    case CALC_KEY_DIVIDE:
+      ret_code = divide_user(state->rpn_stack[state->rpn_stack_size - 2],
+                             state->rpn_stack[state->rpn_stack_size - 1],
+                             &op_output);
       break;
     default:
       ret_code = -5;
@@ -177,8 +187,10 @@ custom_calc_update(custom_calc_state* state, custom_calc_key key) {
     case CALC_KEY_PUSH:
       ret_code = push_input_buf(state);
       break;
-    case CALC_KEY_PLUS:
+    case CALC_KEY_ADD:
+    case CALC_KEY_SUBTRACT:
     case CALC_KEY_MULTIPLY:
+    case CALC_KEY_DIVIDE:
     case CALC_KEY_EQUALS:
       if (state->input_size > 0) {
         ret_code = push_input_buf(state);

@@ -1,4 +1,4 @@
-/* Copyright (C) 2021  Steven Petsche <stevenpetsche@gmail.com>
+/* Copyright (C) 2021 Steven Petsche <stevenpetsche@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,10 +56,11 @@ void test_case(custom_calc_mode mode,
 }
 
 int main(void) {
+/* push = p, multiply = M, divide = d */
   test_case(CALC_MODE_RPN, "12p34p+", "46");
   test_case(CALC_MODE_RPN, "123p456+7890+", "8469");
   test_case(CALC_MODE_RPN, "5p6pM5+", "35");
-  test_case(CALC_MODE_INFIX, "3+4=", "7");
+  test_case(CALC_MODE_INFIX, "3+4d4M2-9=", "-4");
   test_case(CALC_MODE_INFIX, "1+5M2+4=", "15");
 }
 

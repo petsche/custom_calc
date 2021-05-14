@@ -1,4 +1,4 @@
-/* Copyright (C) 2021  Steven Petsche <stevenpetsche@gmail.com>
+/* Copyright (C) 2021 Steven Petsche <stevenpetsche@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,10 +41,26 @@ add_user(int first,
 }
 
 custom_calc_status
+subtract_user(int first,
+              int second,
+              int* output) {
+  *output = first - second;
+  return CALC_STATUS_SUCCESS;
+}
+
+custom_calc_status
 multiply_user(int first,
               int second,
               int* output) {
   *output = first * second;
+  return CALC_STATUS_SUCCESS;
+}
+
+custom_calc_status
+divide_user(int first,
+            int second,
+            int* output) {
+  *output = first / second;
   return CALC_STATUS_SUCCESS;
 }
 
