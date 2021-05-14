@@ -56,6 +56,13 @@ void test_case(custom_calc_mode mode,
 }
 
 int main(void) {
+  /* Input tests */
+  test_case(CALC_MODE_RPN, "1234567890", "12345678");
+  test_case(CALC_MODE_RPN, "123bbbb4", "4");
+  test_case(CALC_MODE_RPN, "123d456", "456");
+  test_case(CALC_MODE_RPN, "1p2pc3p4+", "7");
+
+  /* Output tests */
   test_case(CALC_MODE_RPN, "12p34p+", "46");
   test_case(CALC_MODE_RPN, "123p456+7890+10-", "8459");
   test_case(CALC_MODE_RPN, "5p6p*5+", "35");

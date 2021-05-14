@@ -35,15 +35,31 @@ void string_copy(char* dest, const char* source) {
 }
 
 custom_calc_status
-process_number_input(char* input_buf, char* input_size, char input) {
-  if (*input_size == CALC_IO_WIDTH) {
-    return -2;
-  }
+process_number_input(char* input_buf,
+                     char* input_size,
+                     custom_calc_key key) {
+  if (key == CALC_KEY_CLEAR_ENTRY) {
+    input_buf[0] = 0;
+    *input_size = 0;
+    return CALC_STATUS_SUCCESS;
+  } else if (key == CALC_KEY_BACKSPACE) {
+    /* Ignore if empty */
+    if (*input_size != 0) {
+      --(*input_size);
+      input_buf[*input_size] = 0;
+    }
+    return CALC_STATUS_SUCCESS;
+  } else {
+    if (*input_size == CALC_IO_WIDTH) {
+      /* Ignore if at limit */
+      return CALC_STATUS_SUCCESS;
+    }
 
-  input_buf[*input_size] = input;
-  ++(*input_size);
-  input_buf[*input_size] = 0;
-  return 0;
+    input_buf[*input_size] = (char)key;
+    ++(*input_size);
+    input_buf[*input_size] = 0;
+    return CALC_STATUS_SUCCESS;
+  }
 }
 
 custom_calc_status
@@ -85,32 +101,27 @@ apply_operator_rpn(custom_calc_state* state, custom_calc_key op) {
   }
 
   custom_calc_status ret_code = 0;
+  CALC_NUMBER_TYPE left = state->rpn_stack[state->rpn_stack_size - 2];
+  CALC_NUMBER_TYPE right = state->rpn_stack[state->rpn_stack_size - 1];
   CALC_NUMBER_TYPE op_output;
   switch (op) {
     case CALC_KEY_ADD:
-      ret_code = add_user(state->rpn_stack[state->rpn_stack_size - 2],
-                          state->rpn_stack[state->rpn_stack_size - 1],
-                          &op_output);
+      ret_code = add_user(left, right, &op_output);
       break;
     case CALC_KEY_SUBTRACT:
-      ret_code = subtract_user(state->rpn_stack[state->rpn_stack_size - 2],
-                               state->rpn_stack[state->rpn_stack_size - 1],
-                               &op_output);
+      ret_code = subtract_user(left, right, &op_output);
       break;
     case CALC_KEY_MULTIPLY:
-      ret_code = multiply_user(state->rpn_stack[state->rpn_stack_size - 2],
-                               state->rpn_stack[state->rpn_stack_size - 1],
-                               &op_output);
+      ret_code = multiply_user(left, right, &op_output);
       break;
     case CALC_KEY_DIVIDE:
-      ret_code = divide_user(state->rpn_stack[state->rpn_stack_size - 2],
-                             state->rpn_stack[state->rpn_stack_size - 1],
-                             &op_output);
+      ret_code = divide_user(left, right, &op_output);
       break;
     default:
       ret_code = -5;
   }
   if (ret_code == 0) {
+      /* Pop two values and push new value */
       state->rpn_stack[state->rpn_stack_size - 2] = op_output;
       --(state->rpn_stack_size);
   }
@@ -186,6 +197,9 @@ custom_calc_status
 custom_calc_update(custom_calc_state* state, custom_calc_key key) {
   custom_calc_status ret_code = 0;
   switch (key) {
+    case CALC_KEY_CLEAR_ALL:
+       custom_calc_init(state, state->mode);
+       return CALC_STATUS_SUCCESS;
     case CALC_KEY_0:
     case CALC_KEY_1:
     case CALC_KEY_2:
@@ -197,9 +211,11 @@ custom_calc_update(custom_calc_state* state, custom_calc_key key) {
     case CALC_KEY_8:
     case CALC_KEY_9:
     case CALC_KEY_DECIMAL:
+    case CALC_KEY_BACKSPACE:
+    case CALC_KEY_CLEAR_ENTRY:
       ret_code = process_number_input(state->input_buf,
                                       &(state->input_size),
-                                      (char)key);
+                                      key);
       break;
     case CALC_KEY_PUSH:
       ret_code = push_input_buf(state);

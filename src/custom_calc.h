@@ -17,7 +17,7 @@
 #define CUSTOM_CALC_H
 
 #ifndef CALC_IO_WIDTH
-#define CALC_IO_WIDTH 16
+#define CALC_IO_WIDTH 8
 #endif
 
 #ifndef CALC_MAX_STACK_SIZE
@@ -30,6 +30,7 @@
 
 /* Keys are assigned char values for easier testing. */
 typedef enum custom_calc_key {
+  CALC_KEY_CLEAR_ALL = 'c',
   CALC_KEY_0 = '0',
   CALC_KEY_1 = '1',
   CALC_KEY_2 = '2',
@@ -41,6 +42,8 @@ typedef enum custom_calc_key {
   CALC_KEY_8 = '8',
   CALC_KEY_9 = '9',
   CALC_KEY_DECIMAL = '.',
+  CALC_KEY_BACKSPACE = 'b',
+  CALC_KEY_CLEAR_ENTRY = 'd',
   CALC_KEY_FLIP_SIGN = '~',
   CALC_KEY_PUSH = 'p',
   CALC_KEY_EQUALS = '=',
@@ -88,23 +91,23 @@ parse_number_user(char* buf,
                   CALC_NUMBER_TYPE* output_number);
 
 custom_calc_status
-add_user(CALC_NUMBER_TYPE first,
-         CALC_NUMBER_TYPE second,
+add_user(CALC_NUMBER_TYPE left,
+         CALC_NUMBER_TYPE right,
          CALC_NUMBER_TYPE* output);
 
 custom_calc_status
-subtract_user(CALC_NUMBER_TYPE first,
-              CALC_NUMBER_TYPE second,
+subtract_user(CALC_NUMBER_TYPE left,
+              CALC_NUMBER_TYPE right,
               CALC_NUMBER_TYPE* output);
 
 custom_calc_status
-multiply_user(CALC_NUMBER_TYPE first,
-              CALC_NUMBER_TYPE second,
+multiply_user(CALC_NUMBER_TYPE left,
+              CALC_NUMBER_TYPE right,
               CALC_NUMBER_TYPE* output);
 
 custom_calc_status
-divide_user(CALC_NUMBER_TYPE first,
-            CALC_NUMBER_TYPE second,
+divide_user(CALC_NUMBER_TYPE left,
+            CALC_NUMBER_TYPE right,
             CALC_NUMBER_TYPE* output);
 
 #endif

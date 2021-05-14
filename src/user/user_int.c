@@ -33,34 +33,34 @@ parse_number_user(char* buf,
 }
     
 custom_calc_status
-add_user(int first,
-         int second,
+add_user(int left,
+         int right,
          int* output) {
-  *output = first + second;
+  *output = left + right;
   return CALC_STATUS_SUCCESS;
 }
 
 custom_calc_status
-subtract_user(int first,
-              int second,
+subtract_user(int left,
+              int right,
               int* output) {
-  *output = first - second;
+  *output = left - right;
   return CALC_STATUS_SUCCESS;
 }
 
 custom_calc_status
-multiply_user(int first,
-              int second,
+multiply_user(int left,
+              int right,
               int* output) {
-  *output = first * second;
+  *output = left * right;
   return CALC_STATUS_SUCCESS;
 }
 
 custom_calc_status
-divide_user(int first,
-            int second,
+divide_user(int left,
+            int right,
             int* output) {
-  *output = first / second;
+  *output = left / right;
   return CALC_STATUS_SUCCESS;
 }
 
