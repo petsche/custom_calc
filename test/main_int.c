@@ -34,10 +34,11 @@ void assert_equal(char* expected, char* test_value) {
   }
 }
 
-void test_case(custom_calc_mode mode,
+void test_case(char* test_name,
+               custom_calc_mode mode,
                char* test_input,
                char* final_output) { 
-  printf("Running test for input [%s]\n", test_input);
+  printf("Running test '%s'\nInput [%s]\n", test_name, test_input);
   custom_calc_state state;
   custom_calc_init(&state, mode);
 
@@ -56,17 +57,28 @@ void test_case(custom_calc_mode mode,
 }
 
 int main(void) {
-  /* Input tests */
-  test_case(CALC_MODE_RPN, "1234567890", "12345678");
-  test_case(CALC_MODE_RPN, "123bbbb4", "4");
-  test_case(CALC_MODE_RPN, "123d456", "456");
-  test_case(CALC_MODE_RPN, "1p2pc3p4+", "7");
 
-  /* Output tests */
-  test_case(CALC_MODE_RPN, "12p34p+", "46");
-  test_case(CALC_MODE_RPN, "123p456+7890+10-", "8459");
-  test_case(CALC_MODE_RPN, "5p6p*5+", "35");
-  test_case(CALC_MODE_INFIX, "3+4/4*2p-9=", "-4");
-  test_case(CALC_MODE_INFIX, "1-5+4=", "0");
+  test_case("When extra input, ignore",
+            CALC_MODE_RPN, "1234567890", "12345678");
+  test_case("When backspace empty input, ignore",
+            CALC_MODE_RPN, "123bbbb4", "4");
+  test_case("When clear entry, only delete current input",
+            CALC_MODE_RPN, "12p34d56+", "68");
+  test_case("When clear all, delete whole stack",
+            CALC_MODE_RPN, "1p2pc3p4+", "7");
+  test_case("When rpn add, correct result",
+            CALC_MODE_RPN, "12p34p+", "46");
+  test_case("When operator, auto push",
+            CALC_MODE_RPN, "123p456+7890+10-", "8459");
+  test_case("When rpn multiply, correct result",
+            CALC_MODE_RPN, "5p6p*5+", "35");
+  test_case("When infix chain operators, correct result",
+            CALC_MODE_INFIX, "1-5+4=", "0");
+  test_case("When diff precedence, correct evaluation order",
+            CALC_MODE_INFIX, "3+4/4*2p-9=", "-4");
+  test_case("When flip sign on empty, ignore",
+            CALC_MODE_INFIX, "~7+5~=", "2");
+  test_case("When no infix operator or input, reset",
+            CALC_MODE_INFIX, "1+3=2+4=", "6");
 }
 

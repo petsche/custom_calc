@@ -173,6 +173,16 @@ push_infix_operator(custom_calc_state* state, custom_calc_key key) {
 custom_calc_status
 process_operator(custom_calc_state* state, custom_calc_key key) {
   custom_calc_status ret_code = 0;
+  if (key == CALC_KEY_FLIP_SIGN) {
+    if (state->rpn_stack_size > 0) {
+      return flip_sign_user(state->rpn_stack[state->rpn_stack_size - 1],
+                            &(state->rpn_stack[state->rpn_stack_size - 1]));
+    } else {
+      /* Ignore if no value */
+      return CALC_STATUS_SUCCESS;
+    }
+  }
+
   switch (state->mode) {
     case CALC_MODE_RPN:
       ret_code = apply_operator_rpn(state, key);
@@ -211,6 +221,12 @@ custom_calc_update(custom_calc_state* state, custom_calc_key key) {
     case CALC_KEY_8:
     case CALC_KEY_9:
     case CALC_KEY_DECIMAL:
+      if (state->mode == CALC_MODE_INFIX &&
+          state->input_size == 0 &&
+          state->operator_stack_size == 0) {
+        custom_calc_init(state, state->mode);
+      }
+      /* Fall through */
     case CALC_KEY_BACKSPACE:
     case CALC_KEY_CLEAR_ENTRY:
       ret_code = process_number_input(state->input_buf,
@@ -224,6 +240,7 @@ custom_calc_update(custom_calc_state* state, custom_calc_key key) {
     case CALC_KEY_SUBTRACT:
     case CALC_KEY_MULTIPLY:
     case CALC_KEY_DIVIDE:
+    case CALC_KEY_FLIP_SIGN:
     case CALC_KEY_EQUALS:
       if (state->input_size > 0) {
         ret_code = push_input_buf(state);

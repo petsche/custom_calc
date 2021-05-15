@@ -64,3 +64,10 @@ divide_user(int left,
   return CALC_STATUS_SUCCESS;
 }
 
+custom_calc_status
+flip_sign_user(int input,
+               int* output) {
+  *output = -input;
+  return CALC_STATUS_SUCCESS;
+}
+

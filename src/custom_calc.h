@@ -110,4 +110,8 @@ divide_user(CALC_NUMBER_TYPE left,
             CALC_NUMBER_TYPE right,
             CALC_NUMBER_TYPE* output);
 
+custom_calc_status
+flip_sign_user(CALC_NUMBER_TYPE input,
+               CALC_NUMBER_TYPE* output);
+
 #endif
