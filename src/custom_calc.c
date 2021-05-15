@@ -15,15 +15,15 @@
  */
 #include "custom_calc.h"
 
-void
-reset_input_buf(custom_calc_state* state) {
+void reset_input_buf(custom_calc_state* state) {
+  /* Calculators show 0 when no input */
   state->input_buf[0] = '0';
   state->input_buf[1] = 0;
   state->input_size = 1;
 }
 
 void string_copy(char* dest, const char* source) {
-  /* Assumes source is null-terminated */
+  /* Assumes source is null-terminated, avoids include */
   char index = 0;
   do {
     dest[index] = source[index];
@@ -73,30 +73,16 @@ process_number_input(custom_calc_state* state,
 }
 
 custom_calc_status
-update_output_buf(custom_calc_state* state) {
-  if (state->input_size > 0) {
-    string_copy(state->output_buf, state->input_buf);
-    return 0;
-  }
-  if (state->rpn_stack_size > 0) {
-    return format_number_user(state->rpn_stack[state->rpn_stack_size - 1],
-                              state->output_buf,
-                              CALC_IO_WIDTH);
-  }
-  state->output_buf[0] = 0;
-  return 0;
-}
-
-custom_calc_status
 push_input_buf(custom_calc_state* state) {
   if (state->rpn_stack_size == CALC_MAX_STACK_SIZE) {
-    return -3;
+    return CALC_STATUS_STACK_OVERFLOW;
   }
 
-  custom_calc_status ret_code = parse_number_user(state->input_buf,
-                                   &(state->rpn_stack[state->rpn_stack_size]));
+  custom_calc_status ret_code =
+    parse_number_user(state->input_buf,
+                      &(state->rpn_stack[state->rpn_stack_size]));
 
-  if (ret_code == 0) {
+  if (ret_code == CALC_STATUS_SUCCESS) {
     state->input_buf[0] = 0;
     state->input_size = 0;
     ++(state->rpn_stack_size);
@@ -107,10 +93,10 @@ push_input_buf(custom_calc_state* state) {
 custom_calc_status
 apply_operator_rpn(custom_calc_state* state, custom_calc_key op) {
   if (state->rpn_stack_size < 2) {
-    return -4;
+    return CALC_STATUS_INVALID_OPERATION;
   }
 
-  custom_calc_status ret_code = 0;
+  custom_calc_status ret_code = CALC_STATUS_SUCCESS;
   CALC_NUMBER_TYPE left = state->rpn_stack[state->rpn_stack_size - 2];
   CALC_NUMBER_TYPE right = state->rpn_stack[state->rpn_stack_size - 1];
   CALC_NUMBER_TYPE op_output;
@@ -128,9 +114,9 @@ apply_operator_rpn(custom_calc_state* state, custom_calc_key op) {
       ret_code = divide_user(left, right, &op_output);
       break;
     default:
-      ret_code = -5;
+      ret_code = CALC_STATUS_UNSUPPORTED_OPERATION;
   }
-  if (ret_code == 0) {
+  if (ret_code == CALC_STATUS_SUCCESS) {
       /* Pop two values and push new value */
       state->rpn_stack[state->rpn_stack_size - 2] = op_output;
       --(state->rpn_stack_size);
@@ -162,7 +148,7 @@ char operator_precedence(custom_calc_key operator) {
 
 custom_calc_status
 push_infix_operator(custom_calc_state* state, custom_calc_key key) {
-  custom_calc_status ret_code = 0;
+  custom_calc_status ret_code = CALC_STATUS_SUCCESS;
   while (state->operator_stack_size > 0 &&
          operator_precedence(operator_stack_top(state))
          >= operator_precedence(key)) {
@@ -171,7 +157,7 @@ push_infix_operator(custom_calc_state* state, custom_calc_key key) {
     if (ret_code != CALC_STATUS_SUCCESS) break;
   }
   if (state->operator_stack_size == CALC_MAX_STACK_SIZE) {
-    ret_code = -8;
+    ret_code = CALC_STATUS_STACK_OVERFLOW;
   }
   if (ret_code == CALC_STATUS_SUCCESS) {
     state->operator_stack[state->operator_stack_size] = key;
@@ -182,7 +168,7 @@ push_infix_operator(custom_calc_state* state, custom_calc_key key) {
 
 custom_calc_status
 process_operator(custom_calc_state* state, custom_calc_key key) {
-  custom_calc_status ret_code = 0;
+  custom_calc_status ret_code = CALC_STATUS_SUCCESS;
   if (key == CALC_KEY_FLIP_SIGN) {
     if (state->rpn_stack_size > 0) {
       return flip_sign_user(state->rpn_stack[state->rpn_stack_size - 1],
@@ -208,14 +194,29 @@ process_operator(custom_calc_state* state, custom_calc_key key) {
       }
       break;
     default:
-      return -6;
+      return CALC_STATUS_UNSUPPORTED_MODE;
   }
   return ret_code;
 }
 
 custom_calc_status
+update_output_buf(custom_calc_state* state) {
+  if (state->input_size > 0) {
+    string_copy(state->output_buf, state->input_buf);
+    return CALC_STATUS_SUCCESS;
+  }
+  if (state->rpn_stack_size > 0) {
+    return format_number_user(state->rpn_stack[state->rpn_stack_size - 1],
+                              state->output_buf,
+                              CALC_IO_WIDTH);
+  }
+  state->output_buf[0] = 0;
+  return CALC_STATUS_SUCCESS;
+}
+
+custom_calc_status
 custom_calc_update(custom_calc_state* state, custom_calc_key key) {
-  custom_calc_status ret_code = 0;
+  custom_calc_status ret_code = CALC_STATUS_SUCCESS;
   switch (key) {
     case CALC_KEY_CLEAR_ALL:
        custom_calc_init(state, state->mode);
@@ -253,13 +254,13 @@ custom_calc_update(custom_calc_state* state, custom_calc_key key) {
       if (state->input_size > 0) {
         ret_code = push_input_buf(state);
       }
-      if (ret_code != 0) break;
+      if (ret_code != CALC_STATUS_SUCCESS) break;
       ret_code = process_operator(state, key);
       break;
     default:
-      ret_code = -1;
+      ret_code = CALC_STATUS_UNSUPPORTED_KEY;
   }
-  if (ret_code != 0) return ret_code;
+  if (ret_code != CALC_STATUS_SUCCESS) return ret_code;
 
   ret_code = update_output_buf(state);
  

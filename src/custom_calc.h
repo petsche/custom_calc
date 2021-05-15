@@ -59,7 +59,12 @@ typedef enum custom_calc_mode {
 } custom_calc_mode;
 
 typedef enum custom_calc_status {
-  CALC_STATUS_SUCCESS
+  CALC_STATUS_SUCCESS,
+  CALC_STATUS_UNSUPPORTED_KEY,
+  CALC_STATUS_UNSUPPORTED_OPERATION,
+  CALC_STATUS_UNSUPPORTED_MODE,
+  CALC_STATUS_INVALID_OPERATION,
+  CALC_STATUS_STACK_OVERFLOW
 } custom_calc_status;
 
 typedef struct custom_calc_state {
