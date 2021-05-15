@@ -16,14 +16,10 @@
 #include "custom_calc.h"
 
 void
-custom_calc_init(custom_calc_state* state,
-                 custom_calc_mode mode) {
-  state->input_buf[0] = 0;
-  state->input_size = 0;
-  state->output_buf[0] = 0;
-  state->rpn_stack_size = 0;
-  state->mode = mode;
-  state->operator_stack_size = 0;
+reset_input_buf(custom_calc_state* state) {
+  state->input_buf[0] = '0';
+  state->input_buf[1] = 0;
+  state->input_size = 1;
 }
 
 void string_copy(char* dest, const char* source) {
@@ -34,30 +30,44 @@ void string_copy(char* dest, const char* source) {
   } while (source[index++] != 0);
 }
 
+void
+custom_calc_init(custom_calc_state* state,
+                 custom_calc_mode mode) {
+  reset_input_buf(state);
+  string_copy(state->output_buf, state->input_buf);
+  state->rpn_stack_size = 0;
+  state->mode = mode;
+  state->operator_stack_size = 0;
+}
+
 custom_calc_status
-process_number_input(char* input_buf,
-                     char* input_size,
+process_number_input(custom_calc_state* state,
                      custom_calc_key key) {
   if (key == CALC_KEY_CLEAR_ENTRY) {
-    input_buf[0] = 0;
-    *input_size = 0;
+    reset_input_buf(state);
     return CALC_STATUS_SUCCESS;
   } else if (key == CALC_KEY_BACKSPACE) {
-    /* Ignore if empty */
-    if (*input_size != 0) {
-      --(*input_size);
-      input_buf[*input_size] = 0;
+    --(state->input_size);
+    state->input_buf[state->input_size] = 0;
+    /* Put back 0 if empty */
+    if (state->input_size == 0) {
+      reset_input_buf(state);
     }
     return CALC_STATUS_SUCCESS;
   } else {
-    if (*input_size == CALC_IO_WIDTH) {
+    if (state->input_size == CALC_IO_WIDTH) {
       /* Ignore if at limit */
       return CALC_STATUS_SUCCESS;
     }
-
-    input_buf[*input_size] = (char)key;
-    ++(*input_size);
-    input_buf[*input_size] = 0;
+    if (key != CALC_KEY_DECIMAL &&
+        state->input_size == 1 &&
+        state->input_buf[0] == '0') {
+      /* Ignore placeholder zero */
+      state->input_size = 0;
+    }
+    state->input_buf[state->input_size] = (char)key;
+    ++(state->input_size);
+    state->input_buf[state->input_size] = 0;
     return CALC_STATUS_SUCCESS;
   }
 }
@@ -229,9 +239,7 @@ custom_calc_update(custom_calc_state* state, custom_calc_key key) {
       /* Fall through */
     case CALC_KEY_BACKSPACE:
     case CALC_KEY_CLEAR_ENTRY:
-      ret_code = process_number_input(state->input_buf,
-                                      &(state->input_size),
-                                      key);
+      ret_code = process_number_input(state, key);
       break;
     case CALC_KEY_PUSH:
       ret_code = push_input_buf(state);

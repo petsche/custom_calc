@@ -58,6 +58,14 @@ void test_case(char* test_name,
 
 int main(void) {
 
+  test_case("When init, display zero",
+            CALC_MODE_INFIX, "", "0");
+  test_case("When greater, no zero",
+            CALC_MODE_INFIX, "1", "1");
+  test_case("When decimal, keep zero",
+            CALC_MODE_INFIX, ".1", "0.1");
+  test_case("When clear entry, display zero",
+            CALC_MODE_INFIX, "1+2d", "0");
   test_case("When extra input, ignore",
             CALC_MODE_RPN, "1234567890", "12345678");
   test_case("When backspace empty input, ignore",
