@@ -26,6 +26,8 @@ void assert_success(int ret_code) {
 }
 
 void assert_equal(char* expected, char* test_value) {
+  /* String leading spaces */
+  while (*test_value == ' ') ++test_value;
   if (strcmp(expected, test_value) != 0) {
     printf("Test failed.\nExpected [%s]\nActual [%s]\n",
            expected,
@@ -39,11 +41,13 @@ void test_case(char* test_name,
                char* test_input,
                char* final_output) { 
   printf("Running test '%s'\nInput [%s]\n", test_name, test_input);
+  custom_calc_status ret_code = 0;
   custom_calc_state state;
   custom_calc_init(&state, mode);
+  printf("%s\n", state.output_buf);
+  assert_success(ret_code);
 
   char index = 0;
-  custom_calc_status ret_code = 0;
   while (test_input[index] != 0) {
     custom_calc_key next_key = test_input[index];
     ret_code = custom_calc_update(&state, next_key);
@@ -62,10 +66,14 @@ int main(void) {
             CALC_MODE_INFIX, "", "0");
   test_case("When greater, no zero",
             CALC_MODE_INFIX, "1", "1");
+  test_case("When many zeros, one zero",
+            CALC_MODE_INFIX, "000", "0");
   test_case("When decimal, keep zero",
             CALC_MODE_INFIX, ".1", "0.1");
   test_case("When clear entry, display zero",
             CALC_MODE_INFIX, "1+2d", "0");
+  test_case("When backspace entry, display zero",
+            CALC_MODE_INFIX, "1+2b", "0");
   test_case("When extra input, ignore",
             CALC_MODE_RPN, "1234567890", "12345678");
   test_case("When backspace empty input, ignore",

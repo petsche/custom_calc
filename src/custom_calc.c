@@ -15,29 +15,82 @@
  */
 #include "custom_calc.h"
 
-void reset_input_buf(custom_calc_state* state) {
-  /* Calculators show 0 when no input */
-  state->input_buf[0] = '0';
-  state->input_buf[1] = 0;
-  state->input_size = 1;
-}
-
-void string_copy(char* dest, const char* source) {
-  /* Assumes source is null-terminated, avoids include */
-  char index = 0;
-  do {
-    dest[index] = source[index];
-  } while (source[index++] != 0);
-}
-
 void
+string_copy(char* dest, const char* source) {
+  /* Assumes source is null-terminated, avoids include */
+  const char* end = source + CALC_IO_WIDTH;
+  while (*source != 0 && source < end) {
+    *dest = *source;
+    ++dest;
+    ++source;
+  }
+  *(dest) = 0;
+}
+
+custom_calc_status
+update_output_buf(custom_calc_state* state) {
+  custom_calc_status ret_code = CALC_STATUS_SUCCESS;
+  if (state->input_size > 0) {
+    string_copy(state->output_buf, state->input_buf);
+  } else if (state->rpn_stack_size > 0) {
+    ret_code =
+      format_number_user(state->rpn_stack[state->rpn_stack_size - 1],
+                         state->output_buf,
+                         CALC_IO_WIDTH);
+  } else {
+    state->output_buf[0] = '0';
+    state->output_buf[1] = 0;
+  }
+  if (ret_code == CALC_STATUS_SUCCESS) {
+    /* Right justify */
+    char* end = state->output_buf + CALC_IO_WIDTH;
+    char* last_char = state->output_buf;
+    while (*(last_char + 1) != 0 && last_char != end) {
+      ++last_char;
+    }
+    if (last_char == end) {
+      return CALC_STATUS_BUG;
+    }
+    *end = 0;
+    --end;
+    while (last_char >= state->output_buf) {
+      *end = *last_char;
+      --end;
+      --last_char;
+    }
+    while (end >= state->output_buf) {
+      *end = ' ';
+      --end;
+    }
+  }
+  return ret_code;
+}
+
+void reset_input_buf(custom_calc_state* state) {
+  state->input_buf[0] = 0;
+  state->input_size = 0;
+}
+
+custom_calc_status
 custom_calc_init(custom_calc_state* state,
                  custom_calc_mode mode) {
   reset_input_buf(state);
-  string_copy(state->output_buf, state->input_buf);
   state->rpn_stack_size = 0;
   state->mode = mode;
   state->operator_stack_size = 0;
+  return update_output_buf(state);
+}
+
+void pop_input_char(custom_calc_state* state) {
+  state->input_buf[state->input_size] = 0;
+  --(state->input_size);
+}
+
+void push_input_char(custom_calc_state* state,
+                     char c) {
+  state->input_buf[state->input_size] = c;
+  ++(state->input_size);
+  state->input_buf[state->input_size] = 0;
 }
 
 custom_calc_status
@@ -45,13 +98,15 @@ process_number_input(custom_calc_state* state,
                      custom_calc_key key) {
   if (key == CALC_KEY_CLEAR_ENTRY) {
     reset_input_buf(state);
+    push_input_char(state, '0');
     return CALC_STATUS_SUCCESS;
   } else if (key == CALC_KEY_BACKSPACE) {
-    --(state->input_size);
-    state->input_buf[state->input_size] = 0;
-    /* Put back 0 if empty */
+    if (state->input_size > 0) {
+      --(state->input_size);
+      state->input_buf[state->input_size] = 0;
+    } /* else ignore */
     if (state->input_size == 0) {
-      reset_input_buf(state);
+      push_input_char(state, '0');
     }
     return CALC_STATUS_SUCCESS;
   } else {
@@ -59,15 +114,16 @@ process_number_input(custom_calc_state* state,
       /* Ignore if at limit */
       return CALC_STATUS_SUCCESS;
     }
-    if (key != CALC_KEY_DECIMAL &&
-        state->input_size == 1 &&
+    if (state->input_size == 1 &&
         state->input_buf[0] == '0') {
-      /* Ignore placeholder zero */
-      state->input_size = 0;
+      /* Ignore 0 from previously cleared input */
+      pop_input_char(state);
     }
-    state->input_buf[state->input_size] = (char)key;
-    ++(state->input_size);
-    state->input_buf[state->input_size] = 0;
+    if (key == CALC_KEY_DECIMAL &&
+      state->input_size == 0) {
+      push_input_char(state, '0');
+    }
+    push_input_char(state, (char)key);
     return CALC_STATUS_SUCCESS;
   }
 }
@@ -197,21 +253,6 @@ process_operator(custom_calc_state* state, custom_calc_key key) {
       return CALC_STATUS_UNSUPPORTED_MODE;
   }
   return ret_code;
-}
-
-custom_calc_status
-update_output_buf(custom_calc_state* state) {
-  if (state->input_size > 0) {
-    string_copy(state->output_buf, state->input_buf);
-    return CALC_STATUS_SUCCESS;
-  }
-  if (state->rpn_stack_size > 0) {
-    return format_number_user(state->rpn_stack[state->rpn_stack_size - 1],
-                              state->output_buf,
-                              CALC_IO_WIDTH);
-  }
-  state->output_buf[0] = 0;
-  return CALC_STATUS_SUCCESS;
 }
 
 custom_calc_status

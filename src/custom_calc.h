@@ -30,6 +30,7 @@
 
 /* Keys are assigned char values for easier testing. */
 typedef enum custom_calc_key {
+  CALC_KEY_UNKNOWN = 0,
   CALC_KEY_CLEAR_ALL = 'c',
   CALC_KEY_0 = '0',
   CALC_KEY_1 = '1',
@@ -64,7 +65,8 @@ typedef enum custom_calc_status {
   CALC_STATUS_UNSUPPORTED_OPERATION,
   CALC_STATUS_UNSUPPORTED_MODE,
   CALC_STATUS_INVALID_OPERATION,
-  CALC_STATUS_STACK_OVERFLOW
+  CALC_STATUS_STACK_OVERFLOW,
+  CALC_STATUS_BUG
 } custom_calc_status;
 
 typedef struct custom_calc_state {
@@ -78,7 +80,7 @@ typedef struct custom_calc_state {
   char operator_stack_size;
 } custom_calc_state;
 
-void
+custom_calc_status
 custom_calc_init(custom_calc_state* state,
                  custom_calc_mode mode);
 
