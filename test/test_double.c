@@ -22,6 +22,12 @@
 int main(void) {
   printf("********************Running double test********************\n");
 
+  test_case("When zero, just zero",
+            CALC_MODE_RPN, "0p", "0");
+  test_case("When zero over zero, Nan",
+            CALC_MODE_RPN, "0p0p/", "NaN");
+  test_case("When negative over zero, -Inf",
+            CALC_MODE_RPN, "1p~0p/", "-Inf");
   test_case("When max exact int for size, no decimal",
             CALC_MODE_INFIX, "949999999999999p", "949999999999999");
   test_case("When over max int for size, E notation",

@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "custom_calc.h"
@@ -28,6 +29,20 @@ format_number_user(double number,
     ++output_buf;
     --digits;
     number = -number;
+  }
+  if (isnan(number)) {
+    output_buf[0] = 'N';
+    output_buf[1] = 'a';
+    output_buf[2] = 'N';
+    output_buf[3] = 0;
+    return CALC_STATUS_SUCCESS;
+  }
+  if (isinf(number)) {
+    output_buf[0] = 'I';
+    output_buf[1] = 'n';
+    output_buf[2] = 'f';
+    output_buf[3] = 0;
+    return CALC_STATUS_SUCCESS;
   }
   /* Find magnitude, rounding up */
   sprintf(output_buf, "%.0E", number);
@@ -53,6 +68,9 @@ format_number_user(double number,
     /* Heuristic about max 0s after . for easy reading */
     sprintf(output_buf, "%.*f", digits - 2, number);
     trailing_zeros = 1;
+  } else if (number == 0.0) {
+    output_buf[0] = '0';
+    output_buf[1] = 0;
   } else {
     sprintf(output_buf, "%.6E", number);
   }
