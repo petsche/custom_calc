@@ -20,7 +20,7 @@
 #include "test_util.h"
 
 int main(void) {
-  printf("Running int test...\n");
+  printf("********************Running int test********************\n");
 
   test_case("When init, display zero",
             CALC_MODE_INFIX, "", "0");

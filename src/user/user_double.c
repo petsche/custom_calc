@@ -17,11 +17,66 @@
 #include <stdlib.h>
 #include "custom_calc.h"
  
+/* Only tested for CALC_IO_WIDTH = 16 */
 custom_calc_status
 format_number_user(double number,
                    char* output_buf,
                    char max_output_size) {
-  sprintf(output_buf, "%.3f", number);
+  int digits = max_output_size;
+  if (number < 0.0) {
+    output_buf[0] = '-';
+    ++output_buf;
+    --digits;
+    number = -number;
+  }
+  /* Find magnitude, rounding up */
+  sprintf(output_buf, "%.0E", number);
+  int magnitude = atoi(output_buf + 2);
+  char trailing_zeros = 0;
+  if (number >= 1.0) {
+    /* Check for exact int that can fit */
+    long long int_cast = number;
+    double int_cast_double = int_cast;
+    if (magnitude + 2 <= digits && number == int_cast_double) {
+        sprintf(output_buf, "%lld", int_cast);
+        trailing_zeros = 0;
+    } else {
+      /* Heuristic that 6 decimals is enough */
+      if (magnitude + 7 <= digits) {
+         sprintf(output_buf, "%.6f", number);
+         trailing_zeros = 1;
+      } else {
+        sprintf(output_buf, "%.6E", number);
+      }
+    }
+  } else if (number >= 0.001) {
+    /* Heuristic about max 0s after . for easy reading */
+    sprintf(output_buf, "%.*f", digits - 2, number);
+    trailing_zeros = 1;
+  } else {
+    sprintf(output_buf, "%.6E", number);
+  }
+  if (trailing_zeros) {
+    char* decimal = output_buf;
+    char* end_buf = output_buf + digits;
+    while (*decimal != '.' && *decimal != 0 && decimal <= end_buf) {
+      ++decimal;
+    }
+    if (*decimal != 0 && decimal != end_buf) {
+      char* last_digit = decimal;
+      while (*(last_digit + 1) != 0) {
+        ++last_digit;
+      }
+      while (*last_digit == '0') {
+        *last_digit = 0;
+        --last_digit;
+      }
+      if (*last_digit == '.') {
+        *last_digit = 0;
+        --last_digit;
+      }
+    }
+  }
   return CALC_STATUS_SUCCESS;
 }
     
