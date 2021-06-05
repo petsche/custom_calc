@@ -24,7 +24,7 @@ int main(void) {
 
   test_case("When zero, just zero",
             CALC_MODE_RPN, "0p", "0");
-  test_case("When zero over zero, Nan",
+  test_case("When zero over zero, NaN",
             CALC_MODE_RPN, "0p0p/", "NaN");
   test_case("When negative over zero, -Inf",
             CALC_MODE_RPN, "1p~0p/", "-Inf");

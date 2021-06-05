@@ -106,41 +106,39 @@ parse_number_user(char* buf,
 }
     
 custom_calc_status
-add_user(double left,
-         double right,
-         double* output) {
-  *output = left + right;
-  return CALC_STATUS_SUCCESS;
+operator_bifunction_user(custom_calc_key op,
+                         double left,
+                         double right,
+                         double* output) {
+  switch (op) {
+    case CALC_KEY_ADD:
+      *output = left + right;
+      return CALC_STATUS_SUCCESS;
+    case CALC_KEY_SUBTRACT:
+      *output = left - right;
+      return CALC_STATUS_SUCCESS;
+    case CALC_KEY_MULTIPLY:
+      *output = left * right;
+      return CALC_STATUS_SUCCESS;
+    case CALC_KEY_DIVIDE:
+      *output = left / right;
+      return CALC_STATUS_SUCCESS;
+    default:
+      return CALC_STATUS_UNSUPPORTED_OPERATION;
+  }
 }
 
-custom_calc_status
-subtract_user(double left,
-              double right,
-              double* output) {
-  *output = left - right;
-  return CALC_STATUS_SUCCESS;
-}
 
 custom_calc_status
-multiply_user(double left,
-              double right,
-              double* output) {
-  *output = left * right;
-  return CALC_STATUS_SUCCESS;
-}
-
-custom_calc_status
-divide_user(double left,
-            double right,
-            double* output) {
-  *output = left / right;
-  return CALC_STATUS_SUCCESS;
-}
-
-custom_calc_status
-flip_sign_user(double input,
-               double* output) {
-  *output = -input;
-  return CALC_STATUS_SUCCESS;
+operator_function_user(custom_calc_key op,
+                       double input,
+                       double* output) {
+  switch (op) {
+    case CALC_KEY_FLIP_SIGN:
+      *output = -input;
+      return CALC_STATUS_SUCCESS;
+    default:
+      return CALC_STATUS_UNSUPPORTED_OPERATION;
+  }
 }
 

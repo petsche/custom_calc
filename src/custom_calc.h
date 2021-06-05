@@ -97,28 +97,19 @@ custom_calc_status
 parse_number_user(char* buf,
                   CALC_NUMBER_TYPE* output_number);
 
+/* Keys that will be passed include
+*  ADD, SUBTRACT, MULTIPLY, DIVIDE */
 custom_calc_status
-add_user(CALC_NUMBER_TYPE left,
-         CALC_NUMBER_TYPE right,
-         CALC_NUMBER_TYPE* output);
+operator_bifunction_user(custom_calc_key op,
+                         CALC_NUMBER_TYPE left,
+                         CALC_NUMBER_TYPE right,
+                         CALC_NUMBER_TYPE* output);
 
+/* Keys that will be passed include
+*  FLIP_SIGN */
 custom_calc_status
-subtract_user(CALC_NUMBER_TYPE left,
-              CALC_NUMBER_TYPE right,
-              CALC_NUMBER_TYPE* output);
-
-custom_calc_status
-multiply_user(CALC_NUMBER_TYPE left,
-              CALC_NUMBER_TYPE right,
-              CALC_NUMBER_TYPE* output);
-
-custom_calc_status
-divide_user(CALC_NUMBER_TYPE left,
-            CALC_NUMBER_TYPE right,
-            CALC_NUMBER_TYPE* output);
-
-custom_calc_status
-flip_sign_user(CALC_NUMBER_TYPE input,
-               CALC_NUMBER_TYPE* output);
+operator_function_user(custom_calc_key,
+                       CALC_NUMBER_TYPE input,
+                       CALC_NUMBER_TYPE* output);
 
 #endif

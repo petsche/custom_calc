@@ -156,22 +156,7 @@ apply_operator_rpn(custom_calc_state* state, custom_calc_key op) {
   CALC_NUMBER_TYPE left = state->rpn_stack[state->rpn_stack_size - 2];
   CALC_NUMBER_TYPE right = state->rpn_stack[state->rpn_stack_size - 1];
   CALC_NUMBER_TYPE op_output;
-  switch (op) {
-    case CALC_KEY_ADD:
-      ret_code = add_user(left, right, &op_output);
-      break;
-    case CALC_KEY_SUBTRACT:
-      ret_code = subtract_user(left, right, &op_output);
-      break;
-    case CALC_KEY_MULTIPLY:
-      ret_code = multiply_user(left, right, &op_output);
-      break;
-    case CALC_KEY_DIVIDE:
-      ret_code = divide_user(left, right, &op_output);
-      break;
-    default:
-      ret_code = CALC_STATUS_UNSUPPORTED_OPERATION;
-  }
+  ret_code = operator_bifunction_user(op, left, right, &op_output);
   if (ret_code == CALC_STATUS_SUCCESS) {
       /* Pop two values and push new value */
       state->rpn_stack[state->rpn_stack_size - 2] = op_output;
@@ -227,8 +212,10 @@ process_operator(custom_calc_state* state, custom_calc_key key) {
   custom_calc_status ret_code = CALC_STATUS_SUCCESS;
   if (key == CALC_KEY_FLIP_SIGN) {
     if (state->rpn_stack_size > 0) {
-      return flip_sign_user(state->rpn_stack[state->rpn_stack_size - 1],
-                            &(state->rpn_stack[state->rpn_stack_size - 1]));
+      return operator_function_user(
+               CALC_KEY_FLIP_SIGN,
+               state->rpn_stack[state->rpn_stack_size - 1],
+               &(state->rpn_stack[state->rpn_stack_size - 1]));
     } else {
       /* Ignore if no value */
       return CALC_STATUS_SUCCESS;
