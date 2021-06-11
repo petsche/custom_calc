@@ -78,6 +78,7 @@ custom_calc_init(custom_calc_state* state,
   state->rpn_stack_size = 0;
   state->mode = mode;
   state->operator_stack_size = 0;
+  state->last_operator = CALC_KEY_UNKNOWN;
   return update_output_buf(state);
 }
 
@@ -156,11 +157,13 @@ apply_operator_rpn(custom_calc_state* state, custom_calc_key op) {
   CALC_NUMBER_TYPE left = state->rpn_stack[state->rpn_stack_size - 2];
   CALC_NUMBER_TYPE right = state->rpn_stack[state->rpn_stack_size - 1];
   CALC_NUMBER_TYPE op_output;
-  ret_code = operator_bifunction_user(op, left, right, &op_output);
+  ret_code = binary_operator_user(op, left, right, &op_output);
   if (ret_code == CALC_STATUS_SUCCESS) {
       /* Pop two values and push new value */
       state->rpn_stack[state->rpn_stack_size - 2] = op_output;
       --(state->rpn_stack_size);
+      state->last_operator = op;
+      state->last_right = right;
   }
     
   return ret_code;
@@ -212,7 +215,7 @@ process_operator(custom_calc_state* state, custom_calc_key key) {
   custom_calc_status ret_code = CALC_STATUS_SUCCESS;
   if (key == CALC_KEY_FLIP_SIGN) {
     if (state->rpn_stack_size > 0) {
-      return operator_function_user(
+      return unary_operator_user(
                CALC_KEY_FLIP_SIGN,
                state->rpn_stack[state->rpn_stack_size - 1],
                &(state->rpn_stack[state->rpn_stack_size - 1]));
@@ -228,6 +231,16 @@ process_operator(custom_calc_state* state, custom_calc_key key) {
       break;
     case CALC_MODE_INFIX:
       if (key == CALC_KEY_EQUALS) {
+        if (state->operator_stack_size == 0
+            && state->last_operator != CALC_KEY_UNKNOWN) {
+          /* Push last right and operator for repeated equals behavior */
+          if (state->rpn_stack_size == CALC_MAX_STACK_SIZE) {
+            return CALC_STATUS_STACK_OVERFLOW;
+          }
+          state->rpn_stack[state->rpn_stack_size] = state->last_right;
+          ++(state->rpn_stack_size);
+          return apply_operator_rpn(state, state->last_operator);
+        }
         while (state->operator_stack_size > 0) {
           ret_code = apply_operator_rpn(state, operator_stack_pop(state));
           if (ret_code != CALC_STATUS_SUCCESS) break;

@@ -33,10 +33,10 @@ parse_number_user(char* buf,
 }
     
 custom_calc_status
-operator_bifunction_user(custom_calc_key op,
-                         int left,
-                         int right,
-                         int* output) {
+binary_operator_user(custom_calc_key op,
+                     int left,
+                     int right,
+                     int* output) {
   switch (op) {
     case CALC_KEY_ADD:
       *output = left + right;
@@ -56,9 +56,9 @@ operator_bifunction_user(custom_calc_key op,
 }
 
 custom_calc_status
-operator_function_user(custom_calc_key op,
-                       int input,
-                       int* output) {
+unary_operator_user(custom_calc_key op,
+                    int input,
+                    int* output) {
   switch (op) {
     case CALC_KEY_FLIP_SIGN:
       *output = -input;

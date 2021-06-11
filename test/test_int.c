@@ -56,5 +56,7 @@ int main(void) {
             CALC_MODE_INFIX, "~7+5~=", "2");
   test_case("When no infix operator or input, reset",
             CALC_MODE_INFIX, "1+3=2+4=", "6");
+  test_case("When repeated equals, repeat last operation",
+            CALC_MODE_INFIX, "1+3===-4==", "2");
 }
 

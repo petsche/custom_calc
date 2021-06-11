@@ -78,6 +78,8 @@ typedef struct custom_calc_state {
   custom_calc_mode mode;
   custom_calc_key operator_stack[CALC_MAX_STACK_SIZE];
   char operator_stack_size;
+  custom_calc_key last_operator;
+  CALC_NUMBER_TYPE last_right;
 } custom_calc_state;
 
 custom_calc_status
@@ -100,16 +102,16 @@ parse_number_user(char* buf,
 /* Keys that will be passed include
 *  ADD, SUBTRACT, MULTIPLY, DIVIDE */
 custom_calc_status
-operator_bifunction_user(custom_calc_key op,
-                         CALC_NUMBER_TYPE left,
-                         CALC_NUMBER_TYPE right,
-                         CALC_NUMBER_TYPE* output);
+binary_operator_user(custom_calc_key op,
+                     CALC_NUMBER_TYPE left,
+                     CALC_NUMBER_TYPE right,
+                     CALC_NUMBER_TYPE* output);
 
 /* Keys that will be passed include
 *  FLIP_SIGN */
 custom_calc_status
-operator_function_user(custom_calc_key,
-                       CALC_NUMBER_TYPE input,
-                       CALC_NUMBER_TYPE* output);
+unary_operator_user(custom_calc_key,
+                    CALC_NUMBER_TYPE input,
+                    CALC_NUMBER_TYPE* output);
 
 #endif

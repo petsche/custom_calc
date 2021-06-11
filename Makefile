@@ -13,7 +13,7 @@ build/custom_calc_$(1).o: src/custom_calc.c src/custom_calc.h
 build/user_$(1).o: src/user/user_$(1).c src/custom_calc.h
 	$$(CC) $$(CFLAGS) $$(DEFINES_FOR_$(1)) -c $$< -o $$@
 
-build/test_util_$(1).o: test/test_util.c
+build/test_util_$(1).o: test/test_util.c test/test_util.h src/custom_calc.h
 	$$(CC) $$(CFLAGS) $$(DEFINES_FOR_$(1)) -c $$< -o $$@
 
 build/test_$(1): test/test_$(1).c build/user_$(1).o build/custom_calc_$(1).o build/test_util_$(1).o
